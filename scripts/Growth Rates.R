@@ -225,5 +225,5 @@ ggplot(growth_summary_phase,
   theme_minimal() +
   theme(legend.position = "none")
 
-#lets push to github
+#
 
