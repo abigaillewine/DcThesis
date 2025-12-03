@@ -20,8 +20,9 @@ knitr::include_graphics("Sandy_Point_Dc_Map.jpg")
 ```
 
 ## Reproductive Longevity
+The mean reproductive longevity was estimated to be 8.1 years, with a maximum of 31 years. The average estimate obtained in this study is similar to those found using skeletochronology in the same region. The maximum estimate for reproductive longevity at Sandy Point is larger than estimates found in previous studies.
 
-```{r longevity, echo=FALSE}
+```{r longevity, echo=FALSE, message=FALSE, warning=FALSE}
 library(dplyr)
 library(lubridate)
 library(readr)
@@ -70,52 +71,42 @@ turtle_longevity <- filtered_df %>%
     .groups = "drop"
   )
 
-# Overall summary
-longevity_summary <- turtle_longevity %>%
-  summarise(
-    mean_longevity   = mean(longevity, na.rm = TRUE),
-    median_longevity = median(longevity, na.rm = TRUE),
-    max_longevity    = max(longevity, na.rm = TRUE)
-  )
 
 # Overall summary (excluding turtles with longevity = 0)
+
 newlongevity_summary <- turtle_longevity %>%
   filter(longevity > 0) %>%
   summarise(
-    mean_longevity   = mean(longevity, na.rm = TRUE),
-    median_longevity = median(longevity, na.rm = TRUE),
-    max_longevity    = max(longevity, na.rm = TRUE)
+    Mean   = mean(longevity, na.rm = TRUE),
+    Median = median(longevity, na.rm = TRUE),
+    Min    = min(longevity, na.rm = TRUE),
+    Max    = max(longevity, na.rm = TRUE),
+    SD     = sd(longevity, na.rm = TRUE)
   )
 
-# Recreate the summary (replace with your actual data if needed)
-longevity_summary <- data.frame(
-  N = 575,
-  `Mean (yrs)` = 8.04,
-  `Median (yrs)` = 6,
-  `SD (yrs)` = 5.52,
-  `Min (yrs)` = 1,
-  `Max (yrs)` = 31
-)
-
-# Create table
-longevity_summary %>%
+# table
+newlongevity_summary %>%
   kable(
-    caption = "Descriptive Statistics of Turtle Longevity",
+    caption = "Leatherback Reproductive Longevity",
     digits = 2,
-    format = "html"
+    format = "html",
+    align = "c"
   ) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed", "responsive"),
     full_width = FALSE,
-    position = "center"
+    position = "center",
+    font_size = 16
   ) %>%
-  row_spec(0, bold = TRUE, background = "#D3D3D3") # header row styling
+  row_spec(0, bold = TRUE, background = "#D3D3D3") %>%
+  column_spec(1:ncol(newlongevity_summary), border_left = TRUE, border_right = TRUE)
+
 
 ```
 
 
 ## Size at Sexual Maturity
-
+The mean size of sexual maturity was estimated to be 150.5 cm (CCL), with a total range of 127.6-176.0 cm (CCL). The size of sexual maturity found in this study was higher than estimates previously identified from growth curves based on skeletochronology. 
 ```{r size, echo=FALSE}
 DcDates <- clean_df %>%
   mutate(DateOfActivity = mdy(DateOfActivity),  # convert to Date type
@@ -150,7 +141,7 @@ first_year_data <- filtered_df %>%
   filter(Year == first_year)
 
 
-# Now calculate size at sexual maturity
+# calculate size at sexual maturity
 size_summary <- first_year_data %>%
   summarise(
     min_CCL  = min(CurvedCarapaceLength_NtoN, na.rm = TRUE),
@@ -163,6 +154,32 @@ size_summary <- first_year_data %>%
   )
 
 
+# Overall summary (excluding turtles with longevity = 0)
+
+size_summarytable <- first_year_data %>%
+  summarise(
+    Minimum   = min(CurvedCarapaceLength_NtoN, na.rm = TRUE),
+    Mean    = mean(CurvedCarapaceLength_NtoN, na.rm = TRUE),
+    Maximum    = max(CurvedCarapaceLength_NtoN, na.rm = TRUE)
+  )
+
+# table
+size_summarytable %>%
+  kable(
+    caption = "Leatherback Size at Sexual Maturity (CCL)",
+    digits = 2,
+    format = "html",
+    align = "c"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "center",
+    font_size = 16
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#D3D3D3") %>%
+  column_spec(1:ncol(size_summarytable), border_left = TRUE, border_right = TRUE)
+
 
 #plot size at sexual maturity across years
 ggplot(first_year_data, aes(x = first_year, y = first_CCL)) +geom_jitter()+
@@ -172,9 +189,12 @@ ggplot(first_year_data, aes(x = first_year, y = first_CCL)) +geom_jitter()+
     title = "Change in Size at Sexual Maturity across years"
   ) +
   theme_minimal()
+
 ```
 
-##Post Maturation Growth Rates Across Decades
+## Post Maturation Growth Rates Across Decades
+After the onset of sexual maturity, growth rates for leatherback sea turtles have been found to decrease. At Sandy Point, the post-maturity annual growth rate was estimated to be 0.1 cm/yr (CCL) which is consistent with findings from other mark-recapture studies. Further investigation of post-maturation growth rates at Sandy Point revealed no significant difference in growth rates between turtles that have nested 10 yeas or less, 10-20 years, or for over 20 years (H = 3.5864, p = 0.1664).
+.
 
 ```{r growth, echo=FALSE}
 
@@ -190,7 +210,7 @@ first_year_data <- filtered_df %>%
   inner_join(first_nesting, by = "OriginalTagID") %>%
   filter(Year == first_year)
 
-# Now calculate size at sexual maturity
+# calculate size at sexual maturity
 size_summary <- first_year_data %>%
   summarise(
     min_CCL  = min(CurvedCarapaceLength_NtoN, na.rm = TRUE),
@@ -203,8 +223,6 @@ size_summary <- first_year_data %>%
   )
 
 
-
-
 #binned growth rate
 
 OverTen <- filtered_df %>%
@@ -212,9 +230,6 @@ OverTen <- filtered_df %>%
   filter(max(year(DateOfActivity), na.rm = TRUE) - 
            min(year(DateOfActivity), na.rm = TRUE) >= 10) %>%
   ungroup()
-
-#binned growth rate not including values <-1
-
 
 growth_rates <- OverTen %>%
   arrange(OriginalTagID, DateOfActivity) %>%
@@ -226,12 +241,11 @@ growth_rates <- OverTen %>%
     growth_rate = (CurvedCarapaceLength_NtoN - prev_CCL) / days_elapsed * 365.25,
     years_since_first = as.numeric(difftime(DateOfActivity, min(DateOfActivity, na.rm = TRUE), units = "days")) / 365.25
   ) %>%
-  filter(!is.na(growth_rate) & days_elapsed > 0) %>%  # remove 0-day intervals
+  filter(!is.na(growth_rate) & days_elapsed > 0) %>%
   ungroup()
 
 growth <- growth_rates %>%
-  filter(growth_rate > -1)  # keep only realistic growth
-
+  filter(growth_rate > -1)
 
 growth_rates_bins_cleaned <- growth %>%
   mutate(
@@ -244,17 +258,36 @@ growth_rates_bins_cleaned <- growth %>%
   ) %>%
   filter(!is.na(growth_phase))
 
-#compare bins, not significant
-kruskal.test(growth_rate ~ growth_phase, data = growth_rates_bins_cleaned)
+summary_stats <- growth_rates_bins_cleaned %>%
+  group_by(growth_phase) %>%
+  summarise(
+    mean_rate = mean(growth_rate, na.rm = TRUE),
+    se_rate   = sd(growth_rate, na.rm = TRUE) / sqrt(n())
+  )
 
-#plot (boxplot)
-ggplot(growth_rates_bins_cleaned, aes(x = growth_phase, y = growth_rate, fill = growth_phase)) +geom_jitter()+
-  geom_boxplot() +
-  labs(
-    x = "Nesting year phase",
-    y = "Growth rate (cm yr⁻¹)",
-    title = "Change in growth rate across nesting years"
+
+growth_rates_bins_cleaned$growth_phase <- factor(
+  growth_rates_bins_cleaned$growth_phase,
+  levels = c("Years 1–10", "Years 11–20", "Years 21–31")
+)
+
+
+ggplot(growth_rates_bins_cleaned,
+       aes(x = growth_phase, y = growth_rate, fill = growth_phase)) +
+  geom_violin(trim = FALSE, alpha = 0.4) +
+  geom_jitter(
+    aes(color = growth_phase),
+    width = 0.15, 
+    alpha = 0.4, 
+    size = 1
   ) +
-  theme_minimal()
+  stat_summary(fun = "median", geom = "point", size = 3, color = "black") +
+  labs(
+    x = "Nesting year phase", 
+    y = "Growth rate (cm yr⁻¹)",
+    title = "Growth rate across nesting years"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
 ```
