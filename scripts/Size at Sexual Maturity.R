@@ -63,6 +63,16 @@ size_summary <- first_year_data %>%
   )
 
 
+#size histogram
+
+hist(first_year_data$first_CCL,
+     main = "Frequency Distribution of Size at Sexual Maturity",
+     xlab = "Size at Sexual Maturity",
+     ylab = "Frequency",
+     col = "lightgreen",
+     border = "black"
+)
+
 
 #plot size at sexual maturity across years
 ggplot(first_year_data, aes(x = first_year, y = first_CCL)) +geom_jitter()+
@@ -73,7 +83,7 @@ ggplot(first_year_data, aes(x = first_year, y = first_CCL)) +geom_jitter()+
   ) +
   theme_minimal()
 
-#linear regression, this doesn't seem to be woth much
+#linear regression, this doesn't seem to be worth much
 model <- lm(first_year ~ first_CCL, data=first_year_data)
 
 summary(model)

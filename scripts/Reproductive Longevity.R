@@ -78,3 +78,29 @@ NoZero <- turtle_longevity %>%
 
 #
 #use the data from newlongevity_summary :)
+
+
+
+
+#histogram of the results
+
+hist(turtle_longevity$longevity,
+     main = "Frequency Distribution of Reproductive Longevity",
+     xlab = "Reproductive Longevity",
+     ylab = "Frequency",
+     col = "lightblue",
+     border = "black"
+)
+
+
+#histogram without zeros
+turtle_longevity_no_zero <- turtle_longevity %>%
+  dplyr::filter(longevity != 0)
+
+hist(turtle_longevity_no_zero$longevity,
+     main = "Frequency Distribution of Reproductive Longevity",
+     xlab = "Reproductive Longevity",
+     ylab = "Frequency",
+     col = "lightblue",
+     border = "black"
+)
