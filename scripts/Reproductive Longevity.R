@@ -87,7 +87,7 @@ NoZero <- turtle_longevity %>%
 hist(turtle_longevity$longevity,
      main = "Frequency Distribution of Reproductive Longevity",
      xlab = "Reproductive Longevity",
-     ylab = "Frequency",
+     ylab = "Turtles",
      col = "lightblue",
      border = "black"
 )

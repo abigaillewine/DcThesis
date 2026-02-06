@@ -68,7 +68,7 @@ size_summary <- first_year_data %>%
 hist(first_year_data$first_CCL,
      main = "Frequency Distribution of Size at Sexual Maturity",
      xlab = "Size at Sexual Maturity",
-     ylab = "Frequency",
+     ylab = "Turtles",
      col = "lightgreen",
      border = "black"
 )

@@ -107,6 +107,8 @@ sample_size <- filtered_df %>%
   summarise(n_observations = n(), .groups = "drop")
 
 
+
+
 #bins for each decade
 growth_rates_bins <- growth_rates %>%
   mutate(
@@ -168,6 +170,19 @@ growth_rates <- OverTen %>%
 
 growth <- growth_rates %>%
   filter(growth_rate > -1)  # keep only realistic growth
+
+
+#histagram of growth rates
+
+hist(growth$growth_rate,
+     main = "Frequency Distribution of Post Maturation Growth Rates",
+     xlab = "Post Maturation Growth Rates (cm/yr)",
+     ylab = "Turtles",
+     col = "lightpink",
+     border = "black"
+)
+
+
 
 
 growth_rates_bins_cleaned <- growth %>%

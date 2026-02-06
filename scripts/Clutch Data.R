@@ -6,11 +6,14 @@
 
 library(readr)
 library(tidyverse)
+library(writexl)
 
 
 Excavation_2011 <- read_csv("~/R/Projects/Thesis/data/ExcavationData_2011_2025.csv")
 TurtleID_2011 <- read_csv("~/R/Projects/Thesis/data/TurtleID_2011_2025.csv")
+Excavation_2010 <- read_csv("~/R/Projects/Thesis/data/Excavation_2010.csv")
 
+problems(Excavation_2010)
 
 Full_Clutch_2011 <- full_join(Excavation_2011, TurtleID_2011, by = "SPNWR_ID")
 
@@ -44,10 +47,12 @@ Total_Clutch <- na.omit(Total_Clutch_NA)
 
 
 #save as an excel to then double check and fix IDs
+write_xlsx(Total_Clutch, "~/R/Projects/Thesis/data/Total_Clutch.xlsx")
 
 
 
 
+#combined dc and clutch data using both SPNWR ID and Tag ID???
 
 #body size
   #match nest to body size of the turtle at that nesting event
