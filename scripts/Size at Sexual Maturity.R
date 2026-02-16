@@ -5,7 +5,7 @@ library(tidyverse)
 library(stringr)
 
 DcDataRemoved <- read_csv("~/R/Projects/Thesis/data/DcDataRemoved.csv")
-View(DcDataRemoved)
+
 
 
 # clean rows so we are only looking at the nest lays
@@ -66,7 +66,7 @@ size_summary <- first_year_data %>%
 #size histogram
 
 hist(first_year_data$first_CCL,
-     main = "Frequency Distribution of Size at Sexual Maturity",
+     main = "",
      xlab = "Size at Sexual Maturity",
      ylab = "Turtles",
      col = "lightgreen",

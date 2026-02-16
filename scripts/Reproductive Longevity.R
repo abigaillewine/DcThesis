@@ -3,9 +3,10 @@ library(lubridate)
 library(readr)
 library(tidyverse)
 library(stringr)
+library(writexl)
 
 DcDataRemoved <- read_csv("~/R/Projects/Thesis/data/DcDataRemoved.csv")
-View(DcDataRemoved)
+
 
 # clean rows so we are only looking at the nest lays
 clean_df <- DcDataRemoved %>%
@@ -34,7 +35,8 @@ filtered_df <- DcDates %>%
   ungroup()
 
 
-
+# filtered dataset as an excel
+write_xlsx(filtered_df, "~/R/Projects/Thesis/data/Filtered_Dc.xlsx")
 
 
 
@@ -98,9 +100,45 @@ turtle_longevity_no_zero <- turtle_longevity %>%
   dplyr::filter(longevity != 0)
 
 hist(turtle_longevity_no_zero$longevity,
-     main = "Frequency Distribution of Reproductive Longevity",
+     main = "",
      xlab = "Reproductive Longevity",
-     ylab = "Frequency",
+     ylab = "Turtles",
      col = "lightblue",
      border = "black"
 )
+
+
+
+#Exclude turtles with a longevity less than 3
+
+# Filter turtles with longevity >= 3
+turtle_longevity_overthree <- turtle_longevity %>%
+  dplyr::filter(longevity >= 3)
+
+# Summary statistics
+newlongevity_summary_overthree <- turtle_longevity_overthree %>%
+  summarise(
+    mean_longevity   = mean(longevity, na.rm = TRUE),
+    sd_longevity     = sd(longevity, na.rm = TRUE),
+    median_longevity = median(longevity, na.rm = TRUE),
+    max_longevity    = max(longevity, na.rm = TRUE),
+    n                = n()
+  )
+
+# Histogram
+hist(turtle_longevity_overthree$longevity,
+     main = "",
+     xlab = "Reproductive Longevity (years)",
+     ylab = "Turtles",
+     col = "lightblue",
+     border = "black"
+)
+
+
+
+
+
+
+# Check minimum value
+min(turtle_longevity_overthree$longevity)
+
