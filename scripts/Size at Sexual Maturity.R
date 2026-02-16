@@ -34,6 +34,7 @@ filtered_df <- DcDates %>%
   filter(abs(CurvedCarapaceLength_NtoN - first_CCL) <= 1) %>%
   ungroup()
 
+length(unique(filtered_df$OriginalTagID))
 
 
 # Find each turtle's first nesting year
@@ -49,12 +50,24 @@ first_year_data <- filtered_df %>%
   inner_join(first_nesting, by = "OriginalTagID") %>%
   filter(Year == first_year)
 
+#####################################################
+first_year_data <- filtered_df %>%
+  mutate(Year = year(DateOfActivity)) %>%
+  inner_join(first_nesting, by = "OriginalTagID") %>%
+  filter(Year == first_year) %>%
+  group_by(OriginalTagID) %>%
+  slice(1) %>%  # pick the first row if there are multiple
+  ungroup()
 
+
+
+###################################################
 # Now calculate size at sexual maturity
 size_summary <- first_year_data %>%
   summarise(
     min_CCL  = min(CurvedCarapaceLength_NtoN, na.rm = TRUE),
     mean_CCL = mean(CurvedCarapaceLength_NtoN, na.rm = TRUE),
+    sd_CCL     = sd(CurvedCarapaceLength_NtoN, na.rm = TRUE),
     max_CCL  = max(CurvedCarapaceLength_NtoN, na.rm = TRUE),
     
     min_CCW  = min(CurvedCarapaceWidth, na.rm = TRUE),
@@ -67,7 +80,7 @@ size_summary <- first_year_data %>%
 
 hist(first_year_data$first_CCL,
      main = "",
-     xlab = "Size at Sexual Maturity",
+     xlab = "Size at Sexual Maturity (cm) (CCL)",
      ylab = "Turtles",
      col = "lightgreen",
      border = "black"
