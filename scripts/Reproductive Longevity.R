@@ -133,12 +133,112 @@ hist(turtle_longevity_overthree$longevity,
      col = "lightblue",
      border = "black"
 )
-
-
+mean_longevity <- newlongevity_summary_overthree$mean_longevity
+abline(v = mean_longevity, lwd = 2, lty = 2)
 
 
 
 
 # Check minimum value
 min(turtle_longevity_overthree$longevity)
+
+
+#check for stat differences
+wilcox.test(turtle_longevity_overthree$longevity, mu = 8, alternative = "two.sided", exact = NULL, conf.int = FALSE)
+
+
+
+
+#1985 onward
+
+
+# Per-turtle longevity (all turtles first)
+turtle_longevity_85 <- filtered_df %>%
+  group_by(OriginalTagID) %>%
+  summarise(
+    first_year = min(year(DateOfActivity), na.rm = TRUE),
+    last_year  = max(year(DateOfActivity), na.rm = TRUE),
+    longevity  = last_year - first_year,
+    .groups = "drop"
+  )
+
+# Keep only turtles that began nesting in 1985 onward and longevity over or = to 3
+turtle_longevity_1985on <- turtle_longevity_85 %>%
+  dplyr::filter(first_year >= 1985 & longevity >= 3)
+
+
+# Summary statistics for those turtles
+longevity_summary_1985on <- turtle_longevity_1985on %>%
+  summarise(
+    mean_longevity   = mean(longevity, na.rm = TRUE),
+    sd_longevity     = sd(longevity, na.rm = TRUE),
+    median_longevity = median(longevity, na.rm = TRUE),
+    max_longevity    = max(longevity, na.rm = TRUE),
+    n_turtles        = n()
+  )
+
+hist(turtle_longevity_1985on$longevity,
+     main = "",
+     xlab = "Reproductive Longevity (years)",
+     ylab = "Turtles",
+     col = "lightblue",
+     border = "black"
+)
+
+
+mean_longevity85 <- longevity_summary_1985on$mean_longevity
+abline(v = mean_longevity85, lwd = 2, lty = 2)
+
+
+#1992 onward
+
+# Per-turtle longevity (all turtles first)
+turtle_longevity_92 <- filtered_df %>%
+  group_by(OriginalTagID) %>%
+  summarise(
+    first_year = min(year(DateOfActivity), na.rm = TRUE),
+    last_year  = max(year(DateOfActivity), na.rm = TRUE),
+    longevity  = last_year - first_year,
+    .groups = "drop"
+  )
+
+# Keep only turtles that began nesting in 1992 onward and longevity over or = to 3
+turtle_longevity_1992on <- turtle_longevity_92 %>%
+  dplyr::filter(first_year >= 1992 & longevity >= 3)
+
+
+# Summary statistics for those turtles
+longevity_summary_1992on <- turtle_longevity_1992on %>%
+  summarise(
+    mean_longevity   = mean(longevity, na.rm = TRUE),
+    sd_longevity     = sd(longevity, na.rm = TRUE),
+    median_longevity = median(longevity, na.rm = TRUE),
+    max_longevity    = max(longevity, na.rm = TRUE),
+    n_turtles        = n()
+  )
+
+hist(turtle_longevity_1992on$longevity,
+     main = "",
+     xlab = "Reproductive Longevity (years)",
+     ylab = "Turtles",
+     col = "lightblue",
+     border = "black"
+)
+
+mean_longevity92 <- longevity_summary_1992on$mean_longevity
+abline(v = mean_longevity92, lwd = 2, lty = 2)
+############################################################################
+
+# t-test
+# need to redo and check for normality
+
+
+
+t_test_result <- t.test(turtle_longevity_overthree$longevity, mu = 8)
+
+# Print results
+print(t_test_result)
+
+shapiro.test(turtle_longevity_overthree$longevity) # p > 0.05 suggests normality [2]
+
 

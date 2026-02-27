@@ -80,12 +80,23 @@ size_summary <- first_year_data %>%
 
 hist(first_year_data$first_CCL,
      main = "",
-     xlab = "Size at Sexual Maturity (cm) (CCL)",
+     xlab = "Size at Sexual Maturity (cm, CCL)",
      ylab = "Turtles",
      col = "lightgreen",
      border = "black"
 )
 
+mean_CCL <- size_summary$mean_CCL
+abline(v = mean_CCL, lwd = 3, lty = 2)
+
+
+t.test(first_year_data$first_CCL, mu = 129.2)
+
+
+shapiro.test(first_year_data$first_CCL)
+hist(first_year_data$first_CCL)
+qqnorm(first_year_data$first_CCL)
+qqline(first_year_data$first_CCL)
 
 #plot size at sexual maturity across years
 ggplot(first_year_data, aes(x = first_year, y = first_CCL)) +geom_jitter()+

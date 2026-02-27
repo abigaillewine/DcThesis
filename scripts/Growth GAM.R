@@ -80,6 +80,7 @@ growth_summary_full <- growth_rates %>%
   summarise(
     min_growth    = min(growth_rate, na.rm = TRUE),
     mean_growth   = mean(growth_rate, na.rm = TRUE),
+    sd_growth =sd(growth_rate, na.rm = TRUE),
     median_growth = median(growth_rate, na.rm = TRUE),
     max_growth    = max(growth_rate, na.rm = TRUE)
   )
@@ -245,6 +246,10 @@ smooth_data <- smooth_data %>%
     upper = est + 2 * se
   )
 
+names(smooth_data)
+
+
+
 # Plot
 gam_longevity_fig <- ggplot(smooth_data, aes(x = years_reproducing, y = est)) +
   geom_ribbon(aes(ymin = lower, ymax = upper), fill = "lavender", alpha = 0.3) +  # CI band
@@ -264,9 +269,74 @@ gam_longevity_fig <- ggplot(smooth_data, aes(x = years_reproducing, y = est)) +
   )
 
 gam_longevity_fig
+###################################################################3
+#Growth vs Repro long
 
+# Get smooth estimates from the GAM
+smooth_data <- smooth_estimates(
+  gam_longevity,
+  select = "years_reproducing",
+  partial_match = TRUE
+)
 
+# Compute confidence intervals
+smooth_data <- smooth_data %>%
+  mutate(
+    lower = .estimate - 2 * .se,
+    upper = .estimate + 2 * .se
+  )
 
+# Plot
+gam_longevity_fig <- ggplot(smooth_data, aes(x = years_reproducing, y = .estimate)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "lavender", alpha = 0.3) +  # CI band
+  geom_line(color = "#7570b3", size = 1.5) +  # smooth line
+  geom_point(data = gam_longevity$model,
+             aes(x = years_reproducing, y = growth_rate),
+             inherit.aes = FALSE, color = "darkred", alpha = 0.6, size = 2) +  # individual points
+  labs(
+    x = "Reproductive Longevity (year)",
+    y = "Post Maturation Growth rate (cm yr⁻¹)"
+  ) +
+  theme_classic(base_size = 14) +
+  theme(
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text = element_text(size = 11),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_blank()
+  )
+
+gam_longevity_fig
+
+################################
+# Residuals normality
+resid_gam <- residuals(gam_longevity)
+
+# Histogram
+hist(resid_gam, main = "Residuals of GAM", xlab = "Residuals", col = "lightblue", border = "black")
+
+# Q-Q plot
+qqnorm(resid_gam)
+qqline(resid_gam, col = "red")
+
+# Shapiro-Wilk test (formal test)
+shapiro.test(resid_gam)
+
+#Homoscedasticity
+# Residuals vs fitted
+plot(gam_longevity, residuals = TRUE, pch = 16, cex = 0.7)
+
+# Histogram
+hist(resid_gam, col = "lightblue", main = "Residuals", xlab = "Residual value")
+
+# Q-Q plot
+qqnorm(resid_gam)
+qqline(resid_gam, col = "red")
+
+###################################################################3
+####################################################################
+
+#Combined GAM
 
 gam_full <- gam(growth_rate ~
                   s(prev_size, k=5) +
@@ -376,3 +446,28 @@ library(lmtest)
 bptest(lm_longevity)
 
 shapiro.test(resid(lm_longevity))
+
+
+
+
+#######################################################
+#
+#linear mixed effects model
+
+library(lme4)
+
+lmm_longevity <- lmer(
+  growth_rate ~ years_reproducing +
+    (1 | OriginalTagID),
+  data = growth_gam_data
+)
+
+summary(lmm_longevity)
+
+
+
+
+resid_vals  <- resid(lmm_longevity)
+fitted_vals <- fitted(lmm_longevity)
+
+
